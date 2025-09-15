@@ -141,6 +141,12 @@ Organize as a monorepo with separate `frontend/` and `backend/` folders, plus a 
 - Files: match component or utility name
 - Folders: keep shallow
 
+### Exports/Imports
+
+- **No default exports** — use named exports only
+- Import components and utilities with explicit names: `import { App } from "./App"`
+- Avoids TypeScript module resolution issues and improves IDE support
+
 ### React
 
 - Functional components only

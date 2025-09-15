@@ -1,9 +1,10 @@
 import { useState } from "react"
+
 import { BookingForm } from "./components/BookingForm"
 import { BookingsList } from "./components/BookingsList"
 import { plusDays, todayISO } from "./date"
 
-export default function App() {
+export function App() {
   const [from, setFrom] = useState(todayISO())
   const [to, setTo] = useState(plusDays(todayISO(), 60))
 
