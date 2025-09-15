@@ -59,6 +59,7 @@ npm --prefix backend run test
 - SQLite file: `backend/data.sqlite` (created on first run). Tests use `:memory:`.
 - CORS is enabled for local dev. Frontend uses `VITE_API_BASE` (default `http://localhost:3001`).
 - Minimal UI prioritizing clarity over styling. Stretch features (cancel, calendar, auth) can be added later.
+
 # Car Park Booking (Quantiful)
 
 Simple full-stack app to book a single shared car-park slot. Built with React + Vite on the frontend and Node + Express + SQLite on the backend.
