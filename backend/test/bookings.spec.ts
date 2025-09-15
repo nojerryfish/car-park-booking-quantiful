@@ -10,7 +10,7 @@ describe("Bookings API", () => {
   let app: express.Express
   beforeAll(async () => {
     process.env.DB_FILE = ":memory:"
-    const mod = await import("../src/app")
+    const mod = await import("../src/app.js")
     app = mod.default as unknown as express.Express
   })
   afterAll(() => {
