@@ -22,6 +22,8 @@ export function createBookingsDao(db: DB) {
     `SELECT id, date, name, created_at FROM bookings WHERE date = @date`
   )
 
+  const deleteById = db.prepare<{ id: number }>(`DELETE FROM bookings WHERE id = @id`)
+
   return {
     create(date: string, name: string | null): Booking {
       const created_at = new Date().toISOString()
@@ -34,6 +36,10 @@ export function createBookingsDao(db: DB) {
     },
     getByDate(date: string): Booking | undefined {
       return getByDate.get({ date }) as Booking | undefined
+    },
+    delete(id: number): boolean {
+      const result = deleteById.run({ id })
+      return result.changes > 0
     },
   }
 }
