@@ -40,11 +40,15 @@ npm start
 
 ## API
 
-- GET `/api/bookings?from=YYYY-MM-DD&to=YYYY-MM-DD`
-- POST `/api/bookings` JSON `{ "date": "YYYY-MM-DD", "name"?: string }`
+- GET `/api/bookings?from=YYYY-MM-DD&to=YYYY-MM-DD` - List bookings in date range
+- POST `/api/bookings` JSON `{ "date": "YYYY-MM-DD", "name"?: string }` - Create booking
   - 201 Created → booking object
   - 409 Conflict → `{ "message": "Date already booked" }`
   - 400 Bad Request on invalid payload
+- DELETE `/api/bookings/:id` - Cancel booking by ID
+  - 204 No Content on success
+  - 404 Not Found → `{ "message": "Booking not found" }`
+  - 400 Bad Request for invalid ID
 
 Dates are treated as strings `YYYY-MM-DD`. DB enforces `UNIQUE(date)` to prevent double bookings.
 
