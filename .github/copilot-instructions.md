@@ -131,7 +131,10 @@ Organize as a monorepo with separate `frontend/` and `backend/` folders, plus a 
 ### General
 
 - TypeScript everywhere; strict mode enabled
-- Prettier defaults
+- **Code style**: Use Prettier defaults with these overrides:
+  - **Double quotes** for strings (`"hello"` not `'hello'`)
+  - **No semicolons** (rely on ASI - Automatic Semicolon Insertion)
+  - 2-space indentation, 100-char line width
 - Short, rationale-focused comments
 
 ### Naming & Files
