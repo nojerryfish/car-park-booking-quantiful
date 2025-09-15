@@ -43,8 +43,14 @@ app.get("/api/bookings", (req: Request, res: Response) => {
       .json({ message: parsed.error.issues[0]?.message ?? "Invalid query" })
   }
   const { from, to } = parsed.data
-  const rows = bookings.list(from, to)
-  res.json(rows)
+
+  try {
+    const rows = bookings.list(from, to)
+    res.json(rows)
+  } catch (err: any) {
+    console.error("Unexpected error listing bookings", err)
+    res.status(500).json({ message: "Internal server error" })
+  }
 })
 
 app.post("/api/bookings", (req: Request, res: Response) => {
