@@ -38,9 +38,7 @@ const createBodySchema = z.object({
 app.get("/api/bookings", (req: Request, res: Response) => {
   const parsed = listQuerySchema.safeParse(req.query)
   if (!parsed.success) {
-    return res
-      .status(400)
-      .json({ message: parsed.error.issues[0]?.message ?? "Invalid query" })
+    return res.status(400).json({ message: parsed.error.issues[0]?.message ?? "Invalid query" })
   }
   const { from, to } = parsed.data
 
@@ -56,9 +54,7 @@ app.get("/api/bookings", (req: Request, res: Response) => {
 app.post("/api/bookings", (req: Request, res: Response) => {
   const parsed = createBodySchema.safeParse(req.body)
   if (!parsed.success) {
-    return res
-      .status(400)
-      .json({ message: parsed.error.issues[0]?.message ?? "Invalid body" })
+    return res.status(400).json({ message: parsed.error.issues[0]?.message ?? "Invalid body" })
   }
   const { date, name } = parsed.data
   try {
@@ -78,6 +74,17 @@ app.post("/api/bookings", (req: Request, res: Response) => {
     console.error("Unexpected error creating booking", err)
     res.status(500).json({ message: "Internal server error" })
   }
+})
+
+app.delete("/api/bookings/:id", (req: Request, res: Response) => {
+  const id = parseInt(req.params.id, 10)
+  if (isNaN(id)) {
+    return res.status(400).json({ message: "Invalid booking ID" })
+  }
+
+  // Idempotent delete: always return 204 regardless of whether the booking existed
+  bookings.delete(id)
+  res.status(204).send() // No Content
 })
 
 // Global error fallback (shouldn't often hit due to safeParse and try/catch)
