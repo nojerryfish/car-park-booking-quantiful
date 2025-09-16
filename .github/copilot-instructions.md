@@ -73,7 +73,19 @@ Organize as a monorepo with separate `frontend/` and `backend/` folders, plus a 
 
 - `GET /api/bookings?from=YYYY-MM-DD&to=YYYY-MM-DD`
 - `POST /api/bookings`
-- `DELETE /api/bookings/:id` _(stretch)_
+- `DELETE /api/bookings/:id`
+
+### Deletion Semantics
+
+- All DELETE endpoints are idempotent.
+
+  - If the resource exists → delete it → 204 No Content.
+
+  - If the resource does not exist (already deleted or never existed) → still 204 No Content.
+
+- Rationale: idempotency makes concurrent deletes and client retries safe. Two users deleting the same booking (or a client retry after a timeout) won’t produce a misleading error; the end state (“not present”) is the same.
+
+- Request validation: return 400 only for invalid identifiers (e.g., non-numeric :id when an integer is required). Do not return 404 for missing rows on delete.
 
 ### Validation & Semantics
 
@@ -192,8 +204,8 @@ Organize as a monorepo with separate `frontend/` and `backend/` folders, plus a 
 
 - Vitest + Supertest
 - Use `:memory:` SQLite
-- Smoke tests: create → duplicate conflict → list
-- Negative tests: invalid payload, invalid range
+- Smoke tests: create → duplicate conflict → list → idempotent delete
+- Negative tests: invalid payload, invalid range, Invalid :id format on delete
 
 ### Optional Tests
 
