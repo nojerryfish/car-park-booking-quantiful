@@ -35,7 +35,7 @@ const createBodySchema = z.object({
 })
 
 // Routes
-app.get("/api/bookings", (req: Request, res: Response) => {
+app.get("/api/bookings", (req: Request, res: Response, next: NextFunction) => {
   const parsed = listQuerySchema.safeParse(req.query)
   if (!parsed.success) {
     return res.status(400).json({ message: parsed.error.issues[0]?.message ?? "Invalid query" })
@@ -47,11 +47,11 @@ app.get("/api/bookings", (req: Request, res: Response) => {
     res.json(rows)
   } catch (err: any) {
     console.error("Unexpected error listing bookings", err)
-    res.status(500).json({ message: "Internal server error" })
+    next(err)
   }
 })
 
-app.post("/api/bookings", (req: Request, res: Response) => {
+app.post("/api/bookings", (req: Request, res: Response, next: NextFunction) => {
   const parsed = createBodySchema.safeParse(req.body)
   if (!parsed.success) {
     return res.status(400).json({ message: parsed.error.issues[0]?.message ?? "Invalid body" })
@@ -72,25 +72,29 @@ app.post("/api/bookings", (req: Request, res: Response) => {
       return res.status(409).json({ message: "Date already booked" })
     }
     console.error("Unexpected error creating booking", err)
-    res.status(500).json({ message: "Internal server error" })
+    next(err)
   }
 })
 
-app.delete("/api/bookings/:id", (req: Request, res: Response) => {
+app.delete("/api/bookings/:id", (req: Request, res: Response, next: NextFunction) => {
   const id = parseInt(req.params.id, 10)
   if (isNaN(id)) {
     return res.status(400).json({ message: "Invalid booking ID" })
   }
 
-  // Idempotent delete: always return 204 regardless of whether the booking existed
-  bookings.delete(id)
-  res.status(204).send() // No Content
+  try {
+    // Idempotent delete: always return 204 regardless of whether the booking existed
+    bookings.delete(id)
+    res.status(204).send() // No Content
+  } catch (err) {
+    console.error("Unexpected error deleting booking", err)
+    next(err)
+  }
 })
 
 // Global error fallback (shouldn't often hit due to safeParse and try/catch)
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-  console.error(err)
+app.use((_err: any, _req: Request, res: Response, _next: NextFunction) => {
   res.status(500).json({ message: "Internal server error" })
 })
 
