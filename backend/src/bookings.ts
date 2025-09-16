@@ -37,9 +37,8 @@ export function createBookingsDao(db: DB) {
     getByDate(date: string): Booking | undefined {
       return getByDate.get({ date }) as Booking | undefined
     },
-    delete(id: number): boolean {
-      const result = deleteById.run({ id })
-      return result.changes > 0
+    delete(id: number): void {
+      deleteById.run({ id })
     },
   }
 }
