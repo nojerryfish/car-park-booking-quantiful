@@ -21,8 +21,7 @@ export function BookingsList({ from, to }: Props) {
   })
 
   if (isLoading) return <div>Loading…</div>
-  if (isError)
-    return <div style={{ color: "crimson" }}>{(error as any)?.message || "Failed to load"}</div>
+  if (isError) return <div style={{ color: "crimson" }}>{error?.message || "Failed to load"}</div>
 
   if (!data || data.length === 0) return <div>No bookings in range.</div>
 
