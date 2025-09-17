@@ -7,19 +7,13 @@ export type Booking = {
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3001"
 
-export async function listBookings(
-  from: string,
-  to: string
-): Promise<Booking[]> {
+export async function listBookings(from: string, to: string): Promise<Booking[]> {
   const res = await fetch(`${API_BASE}/api/bookings?from=${from}&to=${to}`)
   if (!res.ok) throw new Error(`Failed to list bookings: ${res.status}`)
   return res.json()
 }
 
-export async function createBooking(
-  date: string,
-  name?: string
-): Promise<Booking> {
+export async function createBooking(date: string, name?: string): Promise<Booking> {
   const res = await fetch(`${API_BASE}/api/bookings`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -36,4 +30,18 @@ export async function createBooking(
     throw new Error(message)
   }
   return res.json()
+}
+
+export async function deleteBooking(id: number): Promise<void> {
+  const res = await fetch(`${API_BASE}/api/bookings/${id}`, {
+    method: "DELETE",
+  })
+  if (res.status === 404) {
+    throw new Error("Booking not found")
+  }
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    const message = body?.message || "Failed to delete booking"
+    throw new Error(message)
+  }
 }
