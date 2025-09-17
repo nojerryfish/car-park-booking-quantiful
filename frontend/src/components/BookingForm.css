@@ -1,0 +1,48 @@
+.date-input {
+  margin-left: 8px;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.date-input:focus {
+  outline: 2px solid #007bff;
+  border-color: #007bff;
+}
+
+/* Style for when a date is selected/has value */
+.date-input:valid {
+  background-color: #e6f3ff;
+  border-color: #007bff;
+}
+
+/* Style for when the selected date is already booked */
+.date-input.date-booked {
+  background-color: #fff3cd;
+  border-color: #ffc107;
+}
+
+.date-input.date-booked:focus {
+  outline-color: #ffc107;
+  border-color: #ffc107;
+}
+
+/* Custom calendar button styling */
+.date-input::-webkit-calendar-picker-indicator {
+  background-color: #007bff;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.date-input::-webkit-calendar-picker-indicator:hover {
+  background-color: #0056b3;
+}
+
+/* Calendar button for booked dates */
+.date-input.date-booked::-webkit-calendar-picker-indicator {
+  background-color: #ffc107;
+}
+
+.date-input.date-booked::-webkit-calendar-picker-indicator:hover {
+  background-color: #ffb300;
+}

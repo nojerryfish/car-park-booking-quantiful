@@ -1,7 +1,8 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
-import { createBooking } from "../api"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useEffect, useRef, useState } from "react"
+import { createBooking, listBookings } from "../api"
 import { plusDays, todayISO } from "../date"
+import "./BookingForm.css"
 
 type Props = { onBooked?: () => void }
 
@@ -11,6 +12,20 @@ export function BookingForm({ onBooked }: Props) {
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  const ref = useRef<string | null>(null)
+
+  const min = todayISO()
+  const max = plusDays(min, 60)
+
+  // Fetch booked dates to show visual indicators
+  const { data: bookedDates = [] } = useQuery({
+    queryKey: ["bookings", min, max],
+    queryFn: () => listBookings(min, max),
+  })
+
+  const bookedDateStrings = new Set(bookedDates.map((booking) => booking.date))
+  const isDateBooked = bookedDateStrings.has(date)
+
   const queryClient = useQueryClient()
   const mutation = useMutation({
     mutationFn: () => createBooking(date, name.trim() || undefined),
@@ -19,19 +34,25 @@ export function BookingForm({ onBooked }: Props) {
       setError(null)
       queryClient.invalidateQueries({ queryKey: ["bookings"] })
       onBooked?.()
+      ref.current = date
     },
-    onError: (err: any) => {
+    onError: (err) => {
       setError(err?.message || "Failed to book")
       setMessage(null)
     },
   })
 
-  const min = todayISO()
-  const max = plusDays(min, 60)
+  useEffect(() => {
+    if (ref.current !== date) {
+      ref.current = null
+      setMessage(null)
+      setError(null)
+    }
+  }, [date])
 
   return (
     <form
-      onSubmit={e => {
+      onSubmit={(e) => {
         e.preventDefault()
         mutation.mutate()
       }}
@@ -49,10 +70,10 @@ export function BookingForm({ onBooked }: Props) {
           <input
             type="date"
             value={date}
-            onChange={e => setDate(e.target.value)}
+            onChange={(e) => setDate(e.target.value)}
             min={min}
             max={max}
-            style={{ marginLeft: 8 }}
+            className={`date-input ${isDateBooked && ref.current !== date ? "date-booked" : ""}`}
             required
           />
         </label>
@@ -61,7 +82,7 @@ export function BookingForm({ onBooked }: Props) {
           <input
             type="text"
             value={name}
-            onChange={e => setName(e.target.value)}
+            onChange={(e) => setName(e.target.value)}
             placeholder="Your name"
             style={{ marginLeft: 8 }}
             maxLength={120}
@@ -71,6 +92,9 @@ export function BookingForm({ onBooked }: Props) {
           {mutation.isPending ? "Booking…" : "Book"}
         </button>
       </div>
+      {isDateBooked && ref.current !== date && (
+        <span style={{ color: "orange", fontSize: "0.8rem", marginLeft: 4 }}>Already booked</span>
+      )}
       {message && <div style={{ color: "green" }}>{message}</div>}
       {error && <div style={{ color: "crimson" }}>{error}</div>}
     </form>
