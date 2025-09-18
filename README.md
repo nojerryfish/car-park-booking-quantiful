@@ -31,7 +31,7 @@ Within the framework that AI provided, I modified or added some features and fun
 ## Prerequisites
 
 - Node.js 20.x (recommended). On Windows with NVM:
-  - `nvm list` then `nvm use 20.19.2`
+  - `nvm list` then `nvm use 20`
 
 ## Install
 
